@@ -12,7 +12,7 @@ import org.mapstruct.*;
 public interface AccountMapper {
 
     @Mapping(target = "actNo", expression = "java(java.util.UUID.randomUUID().toString())")
-    @Mapping(target = "accountType", ignore = true) // ❗ We will set it manually later
+    @Mapping(target = "accountType", ignore = true) // ❗ We will set it manually
     Account customerRequestToAccount(CreateAccountRequest createAccountRequest);
 
     @Mapping(target = "accountType", source = "account.accountType.typeName")

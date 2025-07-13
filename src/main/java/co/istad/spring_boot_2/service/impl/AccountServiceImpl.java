@@ -48,10 +48,6 @@ public class AccountServiceImpl implements AccountService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Customer already has an account of this type");
         }
 
-        if (request.balance().compareTo(BigDecimal.valueOf(5)) < 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Minimum balance is 5");
-        }
-
         Account account = accountMapper.customerRequestToAccount(request);
         account.setCustomer(customer);
         account.setAccountType(accountType);
