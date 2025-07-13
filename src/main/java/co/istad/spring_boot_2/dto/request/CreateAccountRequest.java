@@ -12,7 +12,6 @@ public record CreateAccountRequest(
         @NotBlank(message = "Account name is required")
         String actName,
 
-        @NotBlank
         String actNo,
 
         @NotBlank(message = "Account phone number is required")

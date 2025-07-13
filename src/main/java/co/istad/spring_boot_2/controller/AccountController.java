@@ -8,6 +8,7 @@ import co.istad.spring_boot_2.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,9 +50,9 @@ public class AccountController {
     }
 
     @PutMapping("/disable/{actNo}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void disableAccountByActNo(@PathVariable String actNo) {
+    public ResponseEntity<?> disableAccountByActNo(@PathVariable String actNo) {
         accountService.disableAccountByActNo(actNo);
+        return ResponseEntity.status(HttpStatus.OK).body("Your account disable successfully");
     }
 
     @DeleteMapping("/{actNo}")
