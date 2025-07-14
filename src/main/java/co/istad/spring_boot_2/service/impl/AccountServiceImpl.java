@@ -3,6 +3,7 @@ package co.istad.spring_boot_2.service.impl;
 import co.istad.spring_boot_2.domain.Account;
 import co.istad.spring_boot_2.domain.AccountType;
 import co.istad.spring_boot_2.domain.Customer;
+import co.istad.spring_boot_2.domain.KYC;
 import co.istad.spring_boot_2.dto.request.CustomerPhoneRequest;
 import co.istad.spring_boot_2.dto.response.AccountRespond;
 import co.istad.spring_boot_2.dto.request.CreateAccountRequest;
@@ -11,6 +12,7 @@ import co.istad.spring_boot_2.mapper.AccountMapper;
 import co.istad.spring_boot_2.repository.AccountRepository;
 import co.istad.spring_boot_2.repository.AccountTypeRepository;
 import co.istad.spring_boot_2.repository.CustomerRepository;
+import co.istad.spring_boot_2.repository.KYCRepository;
 import co.istad.spring_boot_2.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,6 +31,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final CustomerRepository customerRepository;
     private final AccountTypeRepository accountTypeRepository;
+    private final KYCRepository kycRepository;
     private final AccountMapper accountMapper;
 
     @Override
@@ -48,10 +51,14 @@ public class AccountServiceImpl implements AccountService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Customer already has an account of this type");
         }
 
+        if(customer.getKyc().getIsVerified().equals(false)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Customer need to be verified");
+        }
+
         Account account = accountMapper.customerRequestToAccount(request);
         account.setCustomer(customer);
         account.setAccountType(accountType);
-        account.setOverLimit(BigDecimal.valueOf(10000));
+        account.setOverLimit(customer.getCustomerSegment().getOverLimitSet());
         account.setIsDeleted(false);
 
         return accountMapper.accountToAccountResponse(accountRepository.save(account));

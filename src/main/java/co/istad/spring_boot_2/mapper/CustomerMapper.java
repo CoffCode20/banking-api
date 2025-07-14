@@ -11,6 +11,8 @@ public interface CustomerMapper {
     // source (params)
     // target (return_type)
 
+    @Mapping(target = "customerSegment", ignore = true)
+    @Mapping(target = "kyc", ignore = true)
     Customer customerRequestToCustomer(CreateCustomerRequest createCustomerRequest);
 
     CustomerResponse customerToCustomerResponse(Customer customer);

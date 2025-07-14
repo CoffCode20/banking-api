@@ -1,5 +1,6 @@
 package co.istad.spring_boot_2.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -36,4 +37,13 @@ public class ServiceException {
                 errors.put(error.getField(), error.getDefaultMessage()));
         return errors;
     }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("message", "Segment name already exists. Please use a different name.");
+        return error;
+    }
+
 }

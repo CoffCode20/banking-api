@@ -29,10 +29,8 @@ public class Customer {
     @Column(unique = true, nullable = false, length = 15)
     private String phone;
 
-    @Column(unique = true, nullable = false, length = 20)
     private String gender;
 
-    @Column(unique = true, nullable = false, length = 100)
     private Boolean isDeleted;
 
     @Column(columnDefinition = "TEXT")
@@ -44,4 +42,7 @@ public class Customer {
 
     @OneToOne(mappedBy = "customer")
     private KYC kyc;
+
+    @ManyToOne(optional = false)
+    private CustomerSegment customerSegment;
 }

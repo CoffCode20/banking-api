@@ -18,15 +18,15 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "transaction_type_id", nullable = false)
     private TransactionType transactionType;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "sender_id")
     private Account sender;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "receiver_id")
     private Account receiver;
 

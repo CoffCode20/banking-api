@@ -38,7 +38,7 @@ public class AccountController {
         return accountService.findAccountByActNo(actNo);
     }
 
-    @GetMapping("/by-customer-name")
+    @GetMapping("/by-customer-phoneNumber")
     @ResponseStatus(HttpStatus.OK)
     public List<AccountRespond> findAccountByCustomer(@Valid @RequestBody CustomerPhoneRequest customerNumber) {
         return accountService.findAccountByCustomerPhone(customerNumber);

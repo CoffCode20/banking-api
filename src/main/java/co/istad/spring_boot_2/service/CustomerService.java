@@ -16,4 +16,5 @@ public interface CustomerService {
 
     CustomerResponse updateByPhone(String phone, UpdateCustomerRequest updateCustomerRequest);
 
+    void disableByCustomerPhone(String customerPhone);
 }

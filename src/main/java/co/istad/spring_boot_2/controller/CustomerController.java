@@ -41,4 +41,10 @@ public class CustomerController {
 
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PutMapping("/disable-customer/{phone}")
+    public void disableCustomer(@PathVariable String phone) {
+        customerService.disableByCustomerPhone(phone);
+    }
+
 }
