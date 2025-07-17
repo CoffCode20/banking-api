@@ -21,6 +21,9 @@ public class AccountType {
     @Column(nullable = false, unique = true)
     private String typeName;
 
+    @Column(nullable = false)
+    private Boolean isDeleted;
+
     @OneToMany(mappedBy = "accountType")
     private List<Account> accounts;
 

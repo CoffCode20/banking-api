@@ -1,28 +1,30 @@
 package co.istad.spring_boot_2.dto.request;
 
-import co.istad.spring_boot_2.domain.AccountType;
-import jakarta.validation.constraints.*;
+import co.istad.spring_boot_2.utils.CurrencyUtil;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.Builder;
+import lombok.NonNull;
 
 import java.math.BigDecimal;
 
 @Builder
 public record CreateAccountRequest(
 
+        String actNo,
+
         @NotBlank(message = "Account name is required")
         String actName,
 
-        String actNo,
+        CurrencyUtil actCurrency,
 
-        @NotBlank(message = "Account phone number is required")
-        @Size(min = 9, max = 12)
-        String phoneNumber,
-
-        @NotNull(message = "Balance is required")
-        @DecimalMin(value = "5.0", message = "Minimum balance must be at least 5")
+        @Positive(message = "Account balance must be greater than 10$ or 40,000KHR")
         BigDecimal balance,
 
         @NotBlank(message = "Account type is required")
-        String accountType
+        String accountType,
+
+        @NotBlank(message = "Customer phone number is required")
+        String phone
 ) {
 }

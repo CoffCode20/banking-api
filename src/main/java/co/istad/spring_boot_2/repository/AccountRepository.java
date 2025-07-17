@@ -15,4 +15,5 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 
     boolean existsByCustomer_PhoneAndAccountType_TypeName(String phone, String typeName);
 
+    boolean existsByActNo(String s);
 }

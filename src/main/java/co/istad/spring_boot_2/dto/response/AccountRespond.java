@@ -1,19 +1,17 @@
 package co.istad.spring_boot_2.dto.response;
 
+import co.istad.spring_boot_2.utils.CurrencyUtil;
 import lombok.Builder;
 
 import java.math.BigDecimal;
 
 @Builder
 public record AccountRespond(
-        String actName,
-
         String actNo,
-
+        String actName,
+        String actCurrency,
         BigDecimal balance,
-
-        BigDecimal overLimit,
-
+        Boolean isHide,
         String accountType
 ) {
 }

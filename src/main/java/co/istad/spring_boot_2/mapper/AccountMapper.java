@@ -11,7 +11,6 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface AccountMapper {
 
-    @Mapping(target = "actNo", expression = "java(java.util.UUID.randomUUID().toString())")
     @Mapping(target = "accountType", ignore = true) // ❗ We will set it manually
     Account customerRequestToAccount(CreateAccountRequest createAccountRequest);
 

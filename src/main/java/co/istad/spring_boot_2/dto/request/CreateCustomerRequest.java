@@ -8,27 +8,30 @@ import lombok.Builder;
 @Builder
 public record CreateCustomerRequest(
 
-        @NotBlank(message = "Customer full name is required")
+        @NotBlank(message = "Customer name is required")
         String fullName,
 
-        @NotBlank(message = "Customer national is required")
-        String nationalCardId,
+        @NotBlank(message = "Customer gender is required")
+        String gender,
 
-        @NotBlank(message = "Segment is required")
-        String segment,
+        @NotBlank(message = "Customer dob is required")
+        String dob,
 
-        @NotBlank(message = "Email is required")
+        @NotBlank(message = "Customer email is required")
         @Email
         String email,
 
-        @NotBlank(message = "Phone number is required")
-        @Size(min = 8, max = 10)
+        @NotBlank(message = "Customer phone number is required")
+        @Size(min = 9, max = 11)
         String phone,
 
-        @NotBlank(message = "Gender is required")
-        String gender,
+        String remark,
 
-        @NotBlank(message = "Remark is required")
-        String remark
+        @NotBlank(message = "Customer national card id is required")
+        @Size(min = 11, max = 12)
+        String nationalCardId,
+
+        @NotBlank(message = "Customer segment is required")
+        String customerSegment
 ) {
 }

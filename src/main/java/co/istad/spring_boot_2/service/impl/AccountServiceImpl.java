@@ -3,17 +3,16 @@ package co.istad.spring_boot_2.service.impl;
 import co.istad.spring_boot_2.domain.Account;
 import co.istad.spring_boot_2.domain.AccountType;
 import co.istad.spring_boot_2.domain.Customer;
-import co.istad.spring_boot_2.domain.KYC;
-import co.istad.spring_boot_2.dto.request.CustomerPhoneRequest;
-import co.istad.spring_boot_2.dto.response.AccountRespond;
 import co.istad.spring_boot_2.dto.request.CreateAccountRequest;
+import co.istad.spring_boot_2.dto.request.CustomerPhoneRequest;
 import co.istad.spring_boot_2.dto.request.UpdateAccountRequest;
+import co.istad.spring_boot_2.dto.response.AccountRespond;
 import co.istad.spring_boot_2.mapper.AccountMapper;
 import co.istad.spring_boot_2.repository.AccountRepository;
 import co.istad.spring_boot_2.repository.AccountTypeRepository;
 import co.istad.spring_boot_2.repository.CustomerRepository;
-import co.istad.spring_boot_2.repository.KYCRepository;
 import co.istad.spring_boot_2.service.AccountService;
+import co.istad.spring_boot_2.utils.CurrencyUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Locale;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,37 +30,82 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final CustomerRepository customerRepository;
     private final AccountTypeRepository accountTypeRepository;
-    private final KYCRepository kycRepository;
     private final AccountMapper accountMapper;
 
     @Override
     public AccountRespond createAccount(CreateAccountRequest request) {
 
-        Customer customer = customerRepository.findByPhone(request.phoneNumber())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
+        Account account = new Account();
 
-        // validation account type
-        AccountType accountType = accountTypeRepository.findAccountTypeByTypeName(request.accountType().toUpperCase(Locale.ROOT))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account type not found"));
+        // Validate account type
+        AccountType accountType = accountTypeRepository
+                .findAccountTypeByTypeName(request.accountType())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Account Type Not Found"));
 
-        String typeName = request.accountType().toUpperCase(Locale.ROOT);
-        String phoneNumber = request.phoneNumber();
+        // Validation customer phone number
+        Customer customer = customerRepository
+                .findByPhone(request.phone())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Customer phone number not found"));
 
-        if (accountRepository.existsByCustomer_PhoneAndAccountType_TypeName(phoneNumber, typeName)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Customer already has an account of this type");
+        switch (request.actCurrency()) {
+            case CurrencyUtil.USD -> {
+                if (request.balance().compareTo(BigDecimal.valueOf(10)) < 0) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Balance must be greater than 10 USD");
+                }
+                // Set over limit base on customer segment
+                if (customer.getCustomerSegment().getSegmentName().equals("REGULAR")) {
+                    account.setOverLimit(BigDecimal.valueOf(5000));
+                } else if (customer.getCustomerSegment().getSegmentName().equals("SILVER")) {
+                    account.setOverLimit(BigDecimal.valueOf(10000));
+                } else {
+                    account.setOverLimit(BigDecimal.valueOf(50000));
+                }
+            }
+            case CurrencyUtil.KHR -> {
+                if (request.balance().compareTo(BigDecimal.valueOf(40000)) < 0) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Balance must be greater than 40,000 KHR");
+                }
+                // Set over limit base on customer segment
+                if (customer.getCustomerSegment().getSegmentName().equals("REGULAR")) {
+                    account.setOverLimit(BigDecimal.valueOf(5000 * 4000));
+                } else if (customer.getCustomerSegment().getSegmentName().equals("SILVER")) {
+                    account.setOverLimit(BigDecimal.valueOf(10000 * 4000));
+                } else {
+                    account.setOverLimit(BigDecimal.valueOf(50000 * 4000));
+                }
+            }
+            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Currency is not supported");
         }
 
-        if(customer.getKyc().getIsVerified().equals(false)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Customer need to be verified");
+        // Validate account no
+        if (request.actNo() != null) {
+            if (accountRepository.existsByActNo(request.actNo())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Account with Act No %s already exists", request.actNo()));
+            }
+            account.setActNo(request.actNo());
+        } else {
+            String actNo;
+            do {
+                actNo = String.format("%09d", new Random().nextInt(1_000_000_000));
+            } while (accountRepository.existsByActNo(actNo));
+            account.setActNo(actNo);
         }
 
-        Account account = accountMapper.customerRequestToAccount(request);
+        // Set data logic
+        account.setActName(request.actName());
+        account.setActCurrency(request.actCurrency().name());
+        account.setBalance(request.balance());
+        account.setIsHide(false);
+        account.setIsDeleted(false);
         account.setCustomer(customer);
         account.setAccountType(accountType);
-        account.setOverLimit(customer.getCustomerSegment().getOverLimitSet());
-        account.setIsDeleted(false);
 
-        return accountMapper.accountToAccountResponse(accountRepository.save(account));
+        account = accountRepository.save(account);
+
+        return accountMapper.accountToAccountResponse(account);
     }
 
     @Override
