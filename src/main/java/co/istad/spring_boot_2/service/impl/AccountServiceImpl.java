@@ -49,6 +49,11 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Customer phone number not found"));
 
+        // validation kyc
+        if(customer.getKyc().getIsVerified().equals(false)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Customer need to be verified");
+        }
+
         switch (request.actCurrency()) {
             case CurrencyUtil.USD -> {
                 if (request.balance().compareTo(BigDecimal.valueOf(10)) < 0) {
