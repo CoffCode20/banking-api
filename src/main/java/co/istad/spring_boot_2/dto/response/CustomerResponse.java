@@ -7,6 +7,8 @@ public record CustomerResponse(
         String fullName,
         String gender,
         String email,
-        String phone
-) {
+        String phone,
+        String dob,
+        String remark,
+        String customerSegment) {
 }

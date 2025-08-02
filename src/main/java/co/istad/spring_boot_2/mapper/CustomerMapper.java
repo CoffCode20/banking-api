@@ -15,6 +15,7 @@ public interface CustomerMapper {
     @Mapping(target = "kyc", ignore = true)
     Customer customerRequestToCustomer(CreateCustomerRequest createCustomerRequest);
 
+    @Mapping(target = "customerSegment", source = "customer.customerSegment.segmentName")
     CustomerResponse customerToCustomerResponse(Customer customer);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

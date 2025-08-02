@@ -71,6 +71,7 @@ public class CustomerServiceImpl implements CustomerService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
         }
         return customers.stream()
+                .filter( customer -> !customer.getIsDeleted())
                 .map(customerMapper::customerToCustomerResponse)
                 .toList();
 

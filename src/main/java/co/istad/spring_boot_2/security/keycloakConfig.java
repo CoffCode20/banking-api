@@ -53,6 +53,8 @@ public class keycloakConfig {
                 .requestMatchers(HttpMethod.PUT,  "/api/v1/accounts/**").hasAnyRole("ADMIN", "CUSTOMER")
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/accounts/**").hasAnyRole("ADMIN", "CUSTOMER")
                 .requestMatchers(HttpMethod.PATCH, "/api/v1/accounts/**").hasAnyRole("ADMIN", "CUSTOMER")
+
+                .requestMatchers("/media/**", "/media/download/**").permitAll()
                 .anyRequest().authenticated()
         );
 
